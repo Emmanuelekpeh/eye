@@ -1,0 +1,249 @@
+{
+ "note": {
+  "by": "agent looked at pilot_results/model_scores/sheet_1..6.png (10 worlds x 200 ticks from noise, UI dream loop; tiles = 4 worlds at tick 100 and 199, 96 px)",
+  "tiers": {
+   "eye": "recognisable eye in >= 6 of the 8 tiles",
+   "some": "recognisable eye in 3-5 of the 8 tiles",
+   "no": "grey/colour blobs or smudges (segmenter scores are NOT used: it flags blobs, e.g. latest.pt .67)"
+  },
+  "date": "2026-11-23"
+ },
+ "models": {
+  "pilot_results/kaggle_ablate_4000steps/A1_kl01/model.pt": {
+   "tier": "no",
+   "bytes": 6033846
+  },
+  "pilot_results/kaggle_ablate_4000steps/A2_kl001/model.pt": {
+   "tier": "no",
+   "bytes": 6033846
+  },
+  "pilot_results/kaggle_ablate_4000steps/A3_l1/model.pt": {
+   "tier": "no",
+   "bytes": 6033846
+  },
+  "pilot_results/kaggle_ablate_4000steps/A4_edge/model.pt": {
+   "tier": "no",
+   "bytes": 6033846
+  },
+  "pilot_results/kaggle_ablate_4000steps/A5_wide/model.pt": {
+   "tier": "no",
+   "bytes": 31017462
+  },
+  "pilot_results/kaggle_ablate_4000steps/A6_wide_kl01_edge/model.pt": {
+   "tier": "no",
+   "bytes": 31017462
+  },
+  "checkpoints/latest.pt": {
+   "tier": "no",
+   "bytes": 3714590
+  },
+  "pilot_results/kaggle_data_mix_8000steps/D0_video/model.pt": {
+   "tier": "no",
+   "bytes": 6031862
+  },
+  "pilot_results/kaggle_data_mix_8000steps/D1_video_openeds/model.pt": {
+   "tier": "no",
+   "bytes": 6031862
+  },
+  "pilot_results/kaggle_data_mix_8000steps/D2_video_openeds_mrl03/model.pt": {
+   "tier": "no",
+   "bytes": 6031862
+  },
+  "pilot_results/kaggle_data_mix_8000steps/D3_video_openeds_mrl10/model.pt": {
+   "tier": "no",
+   "bytes": 6031862
+  },
+  "pilot_results/kaggle_feat_8000steps/F0_base/model.pt": {
+   "tier": "no",
+   "bytes": 6031734
+  },
+  "pilot_results/kaggle_feat_8000steps/F1_lr1e3/model.pt": {
+   "tier": "no",
+   "bytes": 6031734
+  },
+  "pilot_results/kaggle_feat_8000steps/F2_kl001/model.pt": {
+   "tier": "no",
+   "bytes": 6031734
+  },
+  "pilot_results/kaggle_feat_8000steps/F3_embed512/model.pt": {
+   "tier": "no",
+   "bytes": 12001142
+  },
+  "pilot_results/kaggle_feat_8000steps/F4_half_subjects/model.pt": {
+   "tier": "no",
+   "bytes": 6031734
+  },
+  "pilot_results/kaggle_feat_8000steps/F5_quarter_subjects/model.pt": {
+   "tier": "no",
+   "bytes": 6031734
+  },
+  "pilot_results/kaggle_gaze1_8000/pilot/G0_v6_control/model.pt": {
+   "tier": "some",
+   "bytes": 16699638
+  },
+  "pilot_results/kaggle_gaze1_8000/pilot/G1_geom/model.pt": {
+   "tier": "no",
+   "bytes": 17102552
+  },
+  "pilot_results/kaggle_gaze1_8000/pilot/G2_cmd/model.pt": {
+   "tier": "no",
+   "bytes": 16708854
+  },
+  "pilot_results/kaggle_gaze1_8000/pilot/G3_cmd_geom/model.pt": {
+   "tier": "no",
+   "bytes": 17111768
+  },
+  "pilot_results/kaggle_gaze1_8000/pilot/G4_cmd_geom_prior/model.pt": {
+   "tier": "no",
+   "bytes": 17111832
+  },
+  "pilot_results/kaggle_long3_30k/pilot/L1_v6_long/model.pt": {
+   "tier": "some",
+   "bytes": 16699446
+  },
+  "pilot_results/kaggle_long3_30k/pilot/L2_v6_long_pred01/model.pt": {
+   "tier": "some",
+   "bytes": 16699446
+  },
+  "pilot_results/kaggle_long_30k/R4_consistency/model.pt": {
+   "tier": "no",
+   "bytes": 6033910
+  },
+  "pilot_results/kaggle_long_30k/R6_colourise/model.pt": {
+   "tier": "no",
+   "bytes": 6033910
+  },
+  "pilot_results/kaggle_lr1_4000/pilot/LR0_const1e4/model.pt": {
+   "tier": "some",
+   "bytes": 16699702
+  },
+  "pilot_results/kaggle_lr1_4000/pilot/LR0b_const1e4_seed1/model.pt": {
+   "tier": "some",
+   "bytes": 16699702
+  },
+  "pilot_results/kaggle_lr1_4000/pilot/LR1_const3e5/model.pt": {
+   "tier": "some",
+   "bytes": 16699702
+  },
+  "pilot_results/kaggle_lr1_4000/pilot/LR2_cos3e4_to3e5/model.pt": {
+   "tier": "eye",
+   "bytes": 16699702
+  },
+  "pilot_results/kaggle_lr1_4000/pilot/LR3_cos1e3_to1e4/model.pt": {
+   "tier": "some",
+   "bytes": 16699702
+  },
+  "pilot_results/kaggle_os1_8000/pilot/O0_l1_control/model.pt": {
+   "tier": "some",
+   "bytes": 16699702
+  },
+  "pilot_results/kaggle_os1_8000/pilot/O1_overshoot/model.pt": {
+   "tier": "eye",
+   "bytes": 16699702
+  },
+  "pilot_results/kaggle_os1_8000/pilot/O2_overshoot_start/model.pt": {
+   "tier": "no",
+   "bytes": 16699702
+  },
+  "pilot_results/kaggle_r5s2/s2/adv/model.pt": {
+   "tier": "eye",
+   "bytes": 16699766
+  },
+  "pilot_results/kaggle_r5s2/s2/adv/model_s1.pt": {
+   "tier": "eye",
+   "bytes": 16702735
+  },
+  "pilot_results/kaggle_r5s2/s2/adv/model_s2.pt": {
+   "tier": "eye",
+   "bytes": 16702735
+  },
+  "pilot_results/kaggle_r5s2/s2/ctl/model.pt": {
+   "tier": "some",
+   "bytes": 16699766
+  },
+  "pilot_results/kaggle_r5s2/s2/ctl/model_s1.pt": {
+   "tier": "some",
+   "bytes": 16702735
+  },
+  "pilot_results/kaggle_r5s2/s2/ctl/model_s2.pt": {
+   "tier": "some",
+   "bytes": 16702735
+  },
+  "pilot_results/kaggle_v2_4000steps/R0_gray_base/model.pt": {
+   "tier": "no",
+   "bytes": 5951734
+  },
+  "pilot_results/kaggle_v2_4000steps/R1_rgb_base/model.pt": {
+   "tier": "no",
+   "bytes": 6033654
+  },
+  "pilot_results/kaggle_v2_4000steps/R2_rgb_long/model.pt": {
+   "tier": "no",
+   "bytes": 6033718
+  },
+  "pilot_results/kaggle_v2_4000steps/R3_scatter/model.pt": {
+   "tier": "no",
+   "bytes": 6033718
+  },
+  "pilot_results/kaggle_v2_4000steps/R4_consistency/model.pt": {
+   "tier": "no",
+   "bytes": 6033718
+  },
+  "pilot_results/kaggle_v2_4000steps/R5_plasticity/model.pt": {
+   "tier": "no",
+   "bytes": 6033718
+  },
+  "pilot_results/kaggle_v2_4000steps/R6_colourise/model.pt": {
+   "tier": "no",
+   "bytes": 6033718
+  },
+  "pilot_results/kaggle_v_round_8000steps/V1_base/model.pt": {
+   "tier": "no",
+   "bytes": 6031862
+  },
+  "pilot_results/kaggle_v_round_8000steps/V2_bal99/model.pt": {
+   "tier": "no",
+   "bytes": 6031862
+  },
+  "pilot_results/kaggle_v_round_8000steps/V3_bal99_wide/model.pt": {
+   "tier": "no",
+   "bytes": 16699382
+  },
+  "pilot_results/kaggle_v_round_8000steps/V4_bal99_wide_lr1e3/model.pt": {
+   "tier": "some",
+   "bytes": 16699382
+  },
+  "pilot_results/kaggle_v_round_8000steps/V5_bal99_wide_pred01/model.pt": {
+   "tier": "no",
+   "bytes": 16699382
+  },
+  "pilot_results/kaggle_v_round_8000steps/V6_bal99_wide_lr1e3_openeds/model.pt": {
+   "tier": "no",
+   "bytes": 16699446
+  },
+  "pilot_results/kaggle_wm_recon_only_8000steps/W1_kl001_nopred/model.pt": {
+   "tier": "some",
+   "bytes": 6031798
+  },
+  "pilot_results/kaggle_wm_recon_only_8000steps/W2_kl001_nointv/model.pt": {
+   "tier": "no",
+   "bytes": 6031798
+  },
+  "pilot_results/kaggle_wm_recon_only_8000steps/W3_kl001_recon_only/model.pt": {
+   "tier": "some",
+   "bytes": 6031798
+  },
+  "pilot_results/kaggle_wm_recon_only_8000steps/W4_kl001_recon_only_stoch128/model.pt": {
+   "tier": "no",
+   "bytes": 7704566
+  },
+  "pilot_results/kaggle_wm_recon_only_8000steps/W5_kl01_recon_only/model.pt": {
+   "tier": "some",
+   "bytes": 6031798
+  },
+  "pilot_results/kaggle_wm_recon_only_8000steps/W6_kl1_recon_only/model.pt": {
+   "tier": "no",
+   "bytes": 6031798
+  }
+ }
+}

@@ -1,0 +1,6 @@
+torch>=2.2
+torchvision>=0.17
+numpy>=1.24
+Pillow>=10.0
+opencv-python-headless>=4.8   # only needed for video files (lazy import)
+tqdm>=4.66

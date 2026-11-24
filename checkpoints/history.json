@@ -1,0 +1,322 @@
+[
+  {
+    "total": 50.36054984240868,
+    "reconstruction": 15.74030017506516,
+    "kl": 10.562205943478364,
+    "prediction": 24.05766128558014,
+    "epoch": 1,
+    "plasticity_scales": {
+      "encoder": 0.1,
+      "rssm": 0.1,
+      "decoder": 0.1
+    },
+    "probe_error": 0.011225139813462643,
+    "retention_ok": false,
+    "val_passive": {
+      "recon": 0.012581640542678078,
+      "pred": 0.02928793644703475,
+      "mean_baseline_recon": 0.024030753875289104,
+      "mean_baseline_pred": 0.02361630445736045,
+      "copy_last_baseline_pred": 0.004805833904825928
+    },
+    "val_intervened": {
+      "recon": 0.007781750250366098,
+      "pred": 0.013742489597994324,
+      "mean_baseline_recon": 0.05146418506473551,
+      "mean_baseline_pred": 0.053789280836514096,
+      "copy_last_baseline_pred": 0.026002795637213368
+    },
+    "verdict_passive": {
+      "recon_beats_mean_image": true,
+      "pred_beats_copy_last": false
+    }
+  },
+  {
+    "total": 43.342419985302435,
+    "reconstruction": 11.449296778705039,
+    "kl": 12.620120325108733,
+    "prediction": 19.27300271689503,
+    "epoch": 2,
+    "plasticity_scales": {
+      "encoder": 0.1,
+      "rssm": 0.1,
+      "decoder": 0.1
+    },
+    "probe_error": 0.013550708205009296,
+    "retention_ok": false,
+    "val_passive": {
+      "recon": 0.013652610654265073,
+      "pred": 0.035148632510819476,
+      "mean_baseline_recon": 0.02392584023053556,
+      "mean_baseline_pred": 0.023518064182915903,
+      "copy_last_baseline_pred": 0.004907431283344957
+    },
+    "val_intervened": {
+      "recon": 0.006786339275068673,
+      "pred": 0.012226719192723685,
+      "mean_baseline_recon": 0.05162762554136779,
+      "mean_baseline_pred": 0.053958881787045686,
+      "copy_last_baseline_pred": 0.02604850664325902
+    },
+    "verdict_passive": {
+      "recon_beats_mean_image": true,
+      "pred_beats_copy_last": false
+    }
+  },
+  {
+    "total": 40.69669808194469,
+    "reconstruction": 9.991885147025862,
+    "kl": 12.993139253817402,
+    "prediction": 17.711673482814827,
+    "epoch": 3,
+    "plasticity_scales": {
+      "encoder": 0.1,
+      "rssm": 0.1,
+      "decoder": 0.1
+    },
+    "probe_error": 0.014007231290885266,
+    "retention_ok": false,
+    "val_passive": {
+      "recon": 0.014074270059139393,
+      "pred": 0.03415398526977852,
+      "mean_baseline_recon": 0.024066928448088883,
+      "mean_baseline_pred": 0.023769155383147365,
+      "copy_last_baseline_pred": 0.004688158219901682
+    },
+    "val_intervened": {
+      "recon": 0.00585931442051043,
+      "pred": 0.011045353391034254,
+      "mean_baseline_recon": 0.05178385337491521,
+      "mean_baseline_pred": 0.0542120190640084,
+      "copy_last_baseline_pred": 0.025993600294372782
+    },
+    "verdict_passive": {
+      "recon_beats_mean_image": true,
+      "pred_beats_copy_last": false
+    }
+  },
+  {
+    "total": 38.38302048324916,
+    "reconstruction": 8.728317564776454,
+    "kl": 13.346114984730516,
+    "prediction": 16.308587724999487,
+    "epoch": 4,
+    "plasticity_scales": {
+      "encoder": 0.1,
+      "rssm": 0.1,
+      "decoder": 0.1
+    },
+    "probe_error": 0.013988404758009474,
+    "retention_ok": false,
+    "val_passive": {
+      "recon": 0.014608797116746218,
+      "pred": 0.03549133709975883,
+      "mean_baseline_recon": 0.024107063149674122,
+      "mean_baseline_pred": 0.023681778874657833,
+      "copy_last_baseline_pred": 0.004509861577978128
+    },
+    "val_intervened": {
+      "recon": 0.005227758107443949,
+      "pred": 0.010376680158300544,
+      "mean_baseline_recon": 0.05168241357144026,
+      "mean_baseline_pred": 0.054032064238438524,
+      "copy_last_baseline_pred": 0.02603033032358917
+    },
+    "verdict_passive": {
+      "recon_beats_mean_image": true,
+      "pred_beats_copy_last": false
+    }
+  },
+  {
+    "total": 37.031094400518555,
+    "reconstruction": 7.984469203137387,
+    "kl": 13.506082093279916,
+    "prediction": 15.540542904034686,
+    "epoch": 5,
+    "plasticity_scales": {
+      "encoder": 0.1,
+      "rssm": 0.1,
+      "decoder": 0.1
+    },
+    "probe_error": 0.01349209802271005,
+    "retention_ok": false,
+    "val_passive": {
+      "recon": 0.013825632720724373,
+      "pred": 0.03626091099288608,
+      "mean_baseline_recon": 0.02398362327460364,
+      "mean_baseline_pred": 0.023556899196290403,
+      "copy_last_baseline_pred": 0.004619722095341848
+    },
+    "val_intervened": {
+      "recon": 0.004904664026134884,
+      "pred": 0.010039229461690705,
+      "mean_baseline_recon": 0.05171247749268803,
+      "mean_baseline_pred": 0.05402693527230325,
+      "copy_last_baseline_pred": 0.02590093460513848
+    },
+    "verdict_passive": {
+      "recon_beats_mean_image": true,
+      "pred_beats_copy_last": false
+    }
+  },
+  {
+    "total": 35.910879455409535,
+    "reconstruction": 7.507889215214368,
+    "kl": 13.48341720560979,
+    "prediction": 14.91957285329116,
+    "epoch": 6,
+    "plasticity_scales": {
+      "encoder": 0.1,
+      "rssm": 0.1,
+      "decoder": 0.1
+    },
+    "probe_error": 0.015745810317649555,
+    "retention_ok": false,
+    "val_passive": {
+      "recon": 0.016177745412508146,
+      "pred": 0.037394022618972206,
+      "mean_baseline_recon": 0.024065594501335212,
+      "mean_baseline_pred": 0.023617247879131657,
+      "copy_last_baseline_pred": 0.004875174209331482
+    },
+    "val_intervened": {
+      "recon": 0.004622926260395645,
+      "pred": 0.009810159439028158,
+      "mean_baseline_recon": 0.05184639169379751,
+      "mean_baseline_pred": 0.054289808813258296,
+      "copy_last_baseline_pred": 0.02605772600777749
+    },
+    "verdict_passive": {
+      "recon_beats_mean_image": true,
+      "pred_beats_copy_last": false
+    }
+  },
+  {
+    "total": 35.3725981450112,
+    "reconstruction": 7.117123975814867,
+    "kl": 13.592137883794214,
+    "prediction": 14.663336083263781,
+    "epoch": 7,
+    "plasticity_scales": {
+      "encoder": 0.1,
+      "rssm": 0.1,
+      "decoder": 0.1
+    },
+    "probe_error": 0.01400245588390663,
+    "retention_ok": false,
+    "val_passive": {
+      "recon": 0.014335176343425527,
+      "pred": 0.04133031673349411,
+      "mean_baseline_recon": 0.024000278613971887,
+      "mean_baseline_pred": 0.023630038321779335,
+      "copy_last_baseline_pred": 0.004722855138947849
+    },
+    "val_intervened": {
+      "recon": 0.004400912054101108,
+      "pred": 0.00927676092881889,
+      "mean_baseline_recon": 0.05174776584459421,
+      "mean_baseline_pred": 0.05417317450494992,
+      "copy_last_baseline_pred": 0.025791423069285727
+    },
+    "verdict_passive": {
+      "recon_beats_mean_image": true,
+      "pred_beats_copy_last": false
+    }
+  },
+  {
+    "total": 34.84793674619017,
+    "reconstruction": 6.872476977906518,
+    "kl": 13.632652326718011,
+    "prediction": 14.342807235872232,
+    "epoch": 8,
+    "plasticity_scales": {
+      "encoder": 0.1,
+      "rssm": 0.1,
+      "decoder": 0.1
+    },
+    "probe_error": 0.012344742724375931,
+    "retention_ok": false,
+    "val_passive": {
+      "recon": 0.012854669144126151,
+      "pred": 0.0404252016789019,
+      "mean_baseline_recon": 0.02394874079729344,
+      "mean_baseline_pred": 0.023521119869452982,
+      "copy_last_baseline_pred": 0.0044546268183703296
+    },
+    "val_intervened": {
+      "recon": 0.00428584059198017,
+      "pred": 0.009135728315639196,
+      "mean_baseline_recon": 0.05167231852112971,
+      "mean_baseline_pred": 0.05387858268551222,
+      "copy_last_baseline_pred": 0.025719475115875433
+    },
+    "verdict_passive": {
+      "recon_beats_mean_image": true,
+      "pred_beats_copy_last": false
+    }
+  },
+  {
+    "total": 34.444657964627055,
+    "reconstruction": 6.6695035594678425,
+    "kl": 13.627159822936468,
+    "prediction": 14.147994385832828,
+    "epoch": 9,
+    "plasticity_scales": {
+      "encoder": 0.1,
+      "rssm": 0.1,
+      "decoder": 0.1
+    },
+    "probe_error": 0.012690846583548722,
+    "retention_ok": false,
+    "val_passive": {
+      "recon": 0.013414640728524123,
+      "pred": 0.04149100147332555,
+      "mean_baseline_recon": 0.02397741161073424,
+      "mean_baseline_pred": 0.02353900492420088,
+      "copy_last_baseline_pred": 0.004797237343222625
+    },
+    "val_intervened": {
+      "recon": 0.004203369289890866,
+      "pred": 0.008993305813895354,
+      "mean_baseline_recon": 0.05158160984897485,
+      "mean_baseline_pred": 0.05385109153993679,
+      "copy_last_baseline_pred": 0.02596047730861298
+    },
+    "verdict_passive": {
+      "recon_beats_mean_image": true,
+      "pred_beats_copy_last": false
+    }
+  },
+  {
+    "total": 34.02096231705838,
+    "reconstruction": 6.520894927441996,
+    "kl": 13.642726548152243,
+    "prediction": 13.857340635867988,
+    "epoch": 10,
+    "plasticity_scales": {
+      "encoder": 0.1,
+      "rssm": 0.1,
+      "decoder": 0.1
+    },
+    "probe_error": 0.013549171873963274,
+    "retention_ok": false,
+    "val_passive": {
+      "recon": 0.013858736462019128,
+      "pred": 0.045582000436434955,
+      "mean_baseline_recon": 0.024142725813129727,
+      "mean_baseline_pred": 0.023836156443554524,
+      "copy_last_baseline_pred": 0.00447236767998426
+    },
+    "val_intervened": {
+      "recon": 0.004160562017673812,
+      "pred": 0.008981276188996036,
+      "mean_baseline_recon": 0.05157539783285085,
+      "mean_baseline_pred": 0.0539567807697306,
+      "copy_last_baseline_pred": 0.025689502932606086
+    },
+    "verdict_passive": {
+      "recon_beats_mean_image": true,
+      "pred_beats_copy_last": false
+    }
+  }
+]

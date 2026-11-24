@@ -1,0 +1,56 @@
+# Python / test caches
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Videos
+*.mp4
+
+# Docs and generated output kept local
+CHANGES.md
+audit/
+scraped_images/
+macro_images/
+
+# pilot_results: everything is ignored except the allow-list below (models are tracked via Git LFS)
+pilot_results/*
+!pilot_results/model_curation.json
+
+# hybrids: A1_l1dyn_advdec, A2_advdyn_l1dec
+!pilot_results/hybrid_eval/
+pilot_results/hybrid_eval/*
+!pilot_results/hybrid_eval/ui/
+pilot_results/hybrid_eval/ui/*
+!pilot_results/hybrid_eval/ui/A1_l1dyn_advdec/
+pilot_results/hybrid_eval/ui/A1_l1dyn_advdec/*
+!pilot_results/hybrid_eval/ui/A1_l1dyn_advdec/model.pt
+!pilot_results/hybrid_eval/ui/A2_advdyn_l1dec/
+pilot_results/hybrid_eval/ui/A2_advdyn_l1dec/*
+!pilot_results/hybrid_eval/ui/A2_advdyn_l1dec/model.pt
+
+# "eye" tier models (pilot_results/model_curation.json)
+!pilot_results/kaggle_lr1_4000/
+pilot_results/kaggle_lr1_4000/*
+!pilot_results/kaggle_lr1_4000/pilot/
+pilot_results/kaggle_lr1_4000/pilot/*
+!pilot_results/kaggle_lr1_4000/pilot/LR2_cos3e4_to3e5/
+pilot_results/kaggle_lr1_4000/pilot/LR2_cos3e4_to3e5/*
+!pilot_results/kaggle_lr1_4000/pilot/LR2_cos3e4_to3e5/model.pt
+
+!pilot_results/kaggle_os1_8000/
+pilot_results/kaggle_os1_8000/*
+!pilot_results/kaggle_os1_8000/pilot/
+pilot_results/kaggle_os1_8000/pilot/*
+!pilot_results/kaggle_os1_8000/pilot/O1_overshoot/
+pilot_results/kaggle_os1_8000/pilot/O1_overshoot/*
+!pilot_results/kaggle_os1_8000/pilot/O1_overshoot/model.pt
+
+!pilot_results/kaggle_r5s2/
+pilot_results/kaggle_r5s2/*
+!pilot_results/kaggle_r5s2/s2/
+pilot_results/kaggle_r5s2/s2/*
+!pilot_results/kaggle_r5s2/s2/adv/
+pilot_results/kaggle_r5s2/s2/adv/*
+!pilot_results/kaggle_r5s2/s2/adv/model.pt
+!pilot_results/kaggle_r5s2/s2/adv/model_s1.pt
+!pilot_results/kaggle_r5s2/s2/adv/model_s2.pt

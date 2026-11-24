@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EyeNCA dream viewer</title>
+<style>
+:root{--bg:#f6f5f2;--panel:#fff;--ink:#1c1c1a;--mute:#6b6a64;--line:#dedcd5;--accent:#2f6fed;--ok:#2b8a3e;--bad:#c92a2a}
+@media (prefers-color-scheme:dark){:root{--bg:#141413;--panel:#1d1d1b;--ink:#ecebe6;--mute:#9b9a93;--line:#33332f;--accent:#6b9bff;--ok:#51cf66;--bad:#ff6b6b}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,Segoe UI,sans-serif}
+header{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;padding:12px 18px;border-bottom:1px solid var(--line)}
+h1{font-size:16px;margin:0;font-weight:650}
+.chip{padding:2px 9px;border:1px solid var(--line);border-radius:99px;color:var(--mute);font-size:12px}
+main{display:grid;grid-template-columns:repeat(3,minmax(240px,1fr));gap:14px;padding:14px 18px}
+@media (max-width:900px){main{grid-template-columns:1fr}}
+section{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px}
+h2{font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--mute);margin:0 0 8px;font-weight:600}
+.stage{position:relative;width:100%;aspect-ratio:1;touch-action:none;border-radius:8px;overflow:hidden;background:#000}
+.stage img,.stage canvas{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 18px}
+section .row{margin:8px 0 0}
+button{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:5px 10px;cursor:pointer}
+button:hover{border-color:var(--accent)}button.act{background:var(--accent);color:#fff;border-color:var(--accent)}
+input[type=number]{width:96px;font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:4px 6px}
+label{color:var(--mute);font-size:12px}input[type=range]{accent-color:var(--accent);vertical-align:middle}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:8px}.bar>i{display:block;height:100%;width:0;background:var(--accent)}
+.note{font-size:12px;color:var(--mute);margin:6px 0 0}
+#err{color:var(--bad);font-size:12px;min-height:1em;margin:0 18px}
+</style>
+</head>
+<body>
+<header>
+  <h1>EyeNCA dream viewer</h1>
+  <span class="chip" id="cRun">…</span>
+  <span class="chip" id="cDev">…</span>
+  <span class="chip" id="cKind">…</span>
+  <span class="chip" id="cStep">step 0</span>
+  <span class="chip" id="cSigma">σ</span>
+  <span class="chip" id="cSpeed"></span>
+</header>
+<main>
+  <section>
+    <h2>Noisy state x<sub>t</sub></h2>
+    <div class="stage"><img id="x" alt="noisy state"></div>
+    <div class="bar"><i id="prog"></i></div>
+    <p class="note">What the sampler is holding right now: pure noise at the start, an eye at the end.</p>
+  </section>
+  <section>
+    <h2>Model’s clean estimate D(x<sub>t</sub>, σ)</h2>
+    <div class="stage"><img id="est" alt="clean estimate"></div>
+    <p class="note">What the network currently thinks the finished image is.</p>
+  </section>
+  <section>
+    <h2>Result — grab &amp; shake it</h2>
+    <div class="stage" id="stage"><img id="final" alt="finished image"><canvas id="ov"></canvas></div>
+    <p class="note">Drag on the finished image to scatter pixels, then repair it with the same network.</p>
+  </section>
+</main>
+<div class="row">
+  <button id="play" class="act">Pause</button>
+  <button id="again">Same seed again</button>
+  <button id="next">New dream</button>
+  <label>seed <input id="seed" type="number"></label><button id="go">Dream seed</button>
+  <label><input type="checkbox" id="auto" checked> keep dreaming</label>
+  <label>next dream starts from <select id="after"><option value="evolve">its own previous render (evolve)</option><option value="live" id="optLive" hidden>living ticks (keeps its hidden state)</option><option value="seed">fresh noise (new seed)</option></select></label>
+  <label>evolve σ <span id="evv">0.80</span></label><input id="ev" type="range" min="0.1" max="3" step="0.05" value="0.8">
+  <button id="evolveNow">Evolve once</button>
+  <span id="liveCtl" hidden><label>live ticks <input id="lt" type="number" min="1" max="500" value="30" style="width:64px"></label>
+  <label>live σ <span id="lsv">0.05</span></label><input id="ls" type="range" min="0.01" max="0.2" step="0.01" value="0.05">
+  <button id="liveNow">Live once</button></span>
+  <label>noise levels <input id="steps" type="number" min="4" max="64" style="width:64px"></label>
+</div>
+<div class="row">
+  <button id="clear">Clear scatter</button>
+  <button id="repBlind">Repair (blind SDEdit)</button>
+  <button id="repMask">Repair (masked RePaint)</button>
+  <label>σ start (blind) <span id="sgv">0.60</span></label>
+  <input id="sg" type="range" min="0.1" max="2" step="0.05" value="0.6">
+  <label>repair levels <input id="rsteps" type="number" min="4" max="64" value="12" style="width:64px"></label>
+</div>
+<div id="err"></div>
+<script>
+const $ = id => document.getElementById(id);
+let playing = true, busy = false, state = null, pts = [], info = null, lastT = 0;
+const post = async (path, body) => {
+  const r = await fetch(path, {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body || {})});
+  const j = await r.json();
+  if (j.error) throw new Error(j.error);
+  return j;
+};
+const fail = e => { $("err").textContent = String(e.message || e); };
+
+function show(s) {
+  state = s;
+  $("x").src = s.x;
+  if (s.est) $("est").src = s.est;
+  if (s.final) $("final").src = s.final;
+  $("cKind").textContent = s.kind;
+  $("cStep").textContent = `step ${s.i}/${s.n}`;
+  $("cSigma").textContent = `σ ${s.sigma.toFixed(3)}`;
+  $("prog").style.width = (100 * s.i / s.n) + "%";
+  $("seed").value = s.seed;
+}
+
+async function loop() {
+  while (true) {
+    if (!playing || busy || !state) { await new Promise(r => setTimeout(r, 100)); continue; }
+    if (state.done) {
+      const own = state.kind === "dream" || state.kind.startsWith("evolve") || state.kind.startsWith("live");
+      if ($("auto").checked && own) {
+        if ($("after").value === "evolve") await evolve(); else if ($("after").value === "live") await live(); else await newDream(Math.floor(Math.random() * 2 ** 30));
+        continue;
+      }
+      await new Promise(r => setTimeout(r, 200)); continue;
+    }
+    busy = true;
+    try {
+      const t = performance.now();
+      show(await post("/api/tick"));
+      lastT = performance.now() - t;
+      $("cSpeed").textContent = `${(lastT / 1000).toFixed(2)} s / level`;
+      $("err").textContent = "";
+    } catch (e) { fail(e); playing = false; $("play").textContent = "Play"; }
+    busy = false;
+  }
+}
+
+async function newDream(seed) {
+  busy = true;
+  try { pts = []; drawOv(); show(await post("/api/dream", {seed, steps: +$("steps").value})); $("err").textContent = ""; }
+  catch (e) { fail(e); }
+  busy = false;
+}
+
+async function evolve() {
+  if (!state || !state.done) { fail({message: "let the current dream finish first"}); return; }
+  busy = true;
+  try { pts = []; drawOv(); show(await post("/api/evolve", {sigma: +$("ev").value, steps: +$("rsteps").value})); $("err").textContent = ""; }
+  catch (e) { fail(e); playing = false; $("play").textContent = "Play"; }
+  busy = false;
+}
+
+async function live() {
+  if (!state || !state.done) { fail({message: "let the current dream finish first"}); return; }
+  busy = true;
+  try { pts = []; drawOv(); show(await post("/api/live", {ticks: +$("lt").value, sigma: +$("ls").value})); $("err").textContent = ""; }
+  catch (e) { fail(e); playing = false; $("play").textContent = "Play"; }
+  busy = false;
+}
+
+async function repair(masked) {
+  if (!state || !state.done && state.kind === "dream") { fail({message: "let the dream finish first"}); return; }
+  busy = true;
+  try {
+    show(await post("/api/repair", {scatter: pts, masked, sigma: +$("sg").value, steps: +$("rsteps").value, seed: state.seed}));
+    pts = []; drawOv(); $("err").textContent = "";
+  } catch (e) { fail(e); }
+  busy = false;
+}
+
+const ov = $("ov"), ctx = ov.getContext("2d");
+function drawOv() {
+  ov.width = ov.clientWidth; ov.height = ov.clientHeight;
+  ctx.clearRect(0, 0, ov.width, ov.height);
+  ctx.strokeStyle = "rgba(255,120,40,.9)"; ctx.lineWidth = 2;
+  for (const [x, y, k] of pts) {
+    ctx.beginPath(); ctx.arc(x * ov.width, y * ov.height, info.radius * ov.width, 0, 7); ctx.globalAlpha = .25 + .5 * k; ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+}
+let drag = false;
+const at = e => { const b = ov.getBoundingClientRect(); return [(e.clientX - b.left) / b.width, (e.clientY - b.top) / b.height, 1]; };
+ov.addEventListener("pointerdown", e => { drag = true; ov.setPointerCapture(e.pointerId); pts.push(at(e)); drawOv(); });
+ov.addEventListener("pointermove", e => { if (drag && state && state.done) { pts.push(at(e)); if (pts.length > 64) pts.shift(); drawOv(); } });
+ov.addEventListener("pointerup", () => { drag = false; });
+
+$("play").onclick = () => { playing = !playing; $("play").textContent = playing ? "Pause" : "Play"; };
+$("again").onclick = () => newDream(state.seed);
+$("next").onclick = () => newDream(Math.floor(Math.random() * 2 ** 30));
+$("go").onclick = () => newDream(+$("seed").value);
+$("clear").onclick = () => { pts = []; drawOv(); };
+$("repBlind").onclick = () => repair(false);
+$("repMask").onclick = () => repair(true);
+$("evolveNow").onclick = evolve;
+$("liveNow").onclick = live;
+$("ls").oninput = () => { $("lsv").textContent = (+$("ls").value).toFixed(2); };
+$("ev").oninput = () => { $("evv").textContent = (+$("ev").value).toFixed(2); };
+$("sg").oninput = () => { $("sgv").textContent = (+$("sg").value).toFixed(2); };
+
+(async () => {
+  info = await (await fetch("/api/info")).json();
+  $("cRun").textContent = `${info.run || "EyeNCA"} · ${info.params} params · ${info.size}px`;
+  $("cDev").textContent = info.device;
+  if (info.persist) { $("liveCtl").hidden = false; $("optLive").hidden = false; $("after").value = "live"; $("cRun").textContent += " · persistent"; }
+  $("steps").value = info.steps;
+  $("seed").value = info.seed;
+  const r = await post("/api/tick");
+  show(r);
+  loop();
+})().catch(fail);
+</script>
+</body>
+</html>

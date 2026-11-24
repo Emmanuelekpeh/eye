@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Interactive Visual Substrate</title>
+<style>
+:root{--bg:#f6f5f2;--panel:#fff;--ink:#1c1c1a;--mute:#6b6a64;--line:#dedcd5;--accent:#2f6fed;--live:#d9480f;--froz:#2f6fed;--ok:#2b8a3e;--bad:#c92a2a;--bar:#7048e8}
+@media (prefers-color-scheme:dark){:root{--bg:#141413;--panel:#1d1d1b;--ink:#ecebe6;--mute:#9b9a93;--line:#33332f;--accent:#6b9bff;--live:#ff922b;--froz:#74a0ff;--ok:#51cf66;--bad:#ff6b6b;--bar:#9775fa}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,Segoe UI,sans-serif}
+header{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;padding:12px 18px;border-bottom:1px solid var(--line)}
+h1{font-size:16px;margin:0;font-weight:650}
+.chip{padding:2px 9px;border:1px solid var(--line);border-radius:99px;color:var(--mute);font-size:12px}
+.chip.warn{color:var(--bad);border-color:var(--bad)}.chip.on{color:var(--ok);border-color:var(--ok)}
+main{display:grid;grid-template-columns:minmax(300px,420px) minmax(280px,420px) minmax(300px,1fr);gap:14px;padding:14px 18px}
+@media (max-width:1100px){main{grid-template-columns:1fr}}
+section{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px}
+h2{font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--mute);margin:0 0 8px;font-weight:600}
+.stage{position:relative;width:100%;aspect-ratio:1;touch-action:none;cursor:crosshair;border-radius:8px;overflow:hidden;background:#000}
+.stage img,.stage canvas{position:absolute;inset:0;width:100%;height:100%}
+img.px{image-rendering:pixelated;display:block;width:100%}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}
+button{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:5px 10px;cursor:pointer}
+button:hover{border-color:var(--accent)}button.act{background:var(--accent);color:#fff;border-color:var(--accent)}
+button.rec{background:var(--bad);color:#fff;border-color:var(--bad)}
+:root{color-scheme:light dark}
+#modelSel{min-width:460px;max-width:92vw;font:600 22px/1.4 system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink);background:var(--panel);border:2px solid var(--accent);border-radius:10px;padding:8px 12px;cursor:pointer}
+#modelSel option,#modelSel optgroup{font:600 22px/1.9 system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink);background:var(--panel);padding:6px 10px}
+#modelSel optgroup{color:var(--mute);font-weight:700}
+#modelFilter{font:600 16px/1.4 system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 8px;cursor:pointer}
+#modelFilter option{font:600 18px/1.8 system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink);background:var(--panel)}
+#labBody{display:grid;grid-template-columns:repeat(auto-fit,minmax(440px,1fr));gap:12px;margin-top:10px}
+#labBody>div{border:1px solid var(--line);border-radius:10px;padding:10px;overflow:auto}
+#labBody h3{margin:0 0 6px;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--mute)}
+#labBody img{max-width:100%;image-rendering:pixelated;border-radius:4px;display:block;margin-bottom:6px}
+table.lab{border-collapse:collapse;font-size:12px;width:100%}table.lab td,table.lab th{padding:2px 7px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+table.lab th{color:var(--mute);font-weight:600}table.lab td:first-child,table.lab th:first-child{text-align:left}
+.hl{font-weight:700;color:var(--accent)}.dim{color:var(--mute)}.neg{color:var(--bad)}
+.sbar{display:inline-block;height:8px;background:var(--accent);border-radius:3px;vertical-align:middle}
+#labLive select{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:5px 8px}
+label{color:var(--mute);font-size:12px}input[type=range]{accent-color:var(--accent);vertical-align:middle}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+figure{margin:0}figcaption{font-size:12px;color:var(--mute);margin-top:3px}figcaption b{color:var(--ink);font-weight:600}
+canvas.ch{width:100%;height:120px;display:block}canvas.ch.tall{height:150px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;font-size:12px}.kv span:nth-child(odd){color:var(--mute)}
+.col{display:flex;flex-direction:column;gap:14px}
+.snap{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:3px 0;border-bottom:1px dashed var(--line)}
+.note{font-size:12px;color:var(--mute);margin:6px 0 0}
+#err{color:var(--bad);font-size:12px;margin-top:6px;min-height:1em}
+.acts{display:flex;gap:8px;align-items:flex-start}.acts img{flex:1;min-width:0;image-rendering:pixelated;border-radius:4px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Interactive Visual Substrate</h1>
+  <span class="chip" id="cTick">tick 0</span>
+  <label for="modelSel" style="margin-left:4px;font-size:18px;font-weight:600;color:var(--ink)">Model</label>
+  <select id="modelSel" title="Switch the trained world model (starts a fresh world: touch, snapshots and the learning replay buffer are cleared)"><option>loading models…</option></select>
+  <select id="modelFilter" title="Which models to list. 'Makes an eye' / 'Sometimes' = looked at in the UI dream loop from noise starts (pilot_results/model_curation.json, sheets in pilot_results/model_scores/)"><option value="eyes">Only models that make an eye</option><option value="some" selected>Make an eye at least sometimes</option><option value="all">All models</option></select>
+  <span class="chip" id="modelCount"></span>
+  <span class="chip" id="cSrc">…</span>
+  <span class="chip" id="cTrain">…</span>
+  <span class="chip" id="cLearn">learning off</span>
+  <span class="chip" id="cMode">watching</span>
+  <span class="chip" id="cFps"></span>
+</header>
+<main>
+  <div class="col">
+    <section>
+      <h2>The model’s own eye — touch it</h2>
+      <div class="stage" id="stage"><img id="stim" class="px" alt="what the model perceives"><canvas id="ov"></canvas></div>
+      <div class="row">
+        <button id="toolScatter" class="act">Grab &amp; shake</button>
+        <button id="toolLight">Move light</button>
+        <button id="toolEye">Move eye</button>
+        <button id="toolGaze" style="display:none">Aim gaze</button>
+        <button id="gazeBtn" style="display:none">Gaze command: off</button>
+        <button id="wander">Wander latent space: off</button>
+      </div>
+      <div class="row"><label>Exposure <span id="expv">×1.00</span></label>
+        <input id="exp" type="range" min="-0.5" max="0.5" step="0.01" value="0" style="flex:1"></div>
+      <div class="row"><label>Heal from</label><label>perceived</label>
+        <input id="trust" type="range" min="0" max="1" step="0.05" value="0.5" style="flex:1"><label>expected</label></div>
+      <div class="row">
+        <button id="pDim">Dim room</button><button id="pSpot">Spotlight left</button><button id="pEye">Eye far left</button><button id="pCenter">Reset touch</button>
+        <button id="reseed">New noise eye</button>
+      </div>
+      <p class="note" id="gazeNote" style="display:none"></p>
+      <p class="note">No dataset: this canvas is the model’s own render, started from noise or, when the source line says birth memory, from the eye the model itself remembers perceiving once. <b>Grab &amp; shake</b> scatters pixels under the pointer (faster shake = stronger). There is no light until you switch it on (<b>Move light</b> or <b>Spotlight left</b>); <b>Reset touch</b> turns it off. The model never sees the numbers behind shift, exposure or light, only the pixels and the rate-limited per-step change as an action. After each tick the canvas is overwritten by the model’s belief, blended between what it perceived and what it expected.</p>
+    </section>
+    <section>
+      <h2>Controls</h2>
+      <div class="row">
+        <button id="intervene" class="act">Intervene: on</button>
+        <button id="learn">Learning: off</button>
+        <button id="dream">Dream: off</button>
+        <button id="pause">Pause</button>
+      </div>
+      <div class="row"><label>Rate</label><input id="fps" type="range" min="2" max="30" step="1" value="12"></div>
+      <p class="note"><b>Intervene: off</b> ignores all touch (shake, light, eye, exposure, wander) so the world model runs on its own; a touch already applied stays until you press Reset touch. <b>Dream</b>: your touch reaches the model only as actions; it perceives its own render, so what you see in the error chart is dissonance (expected vs perceived). <b>Learning</b> (off by default) updates only the dynamics (RSSM): encoder and decoder stay frozen. It learns from that dissonance on what it perceived, and is pulled back toward the frozen copy by pseudo-rehearsal. The frozen copy never changes.</p>
+    </section>
+  </div>
+
+  <div class="col">
+    <section>
+      <h2>Model’s world</h2>
+      <div class="grid2">
+        <figure><img id="pred" class="px" alt=""><figcaption><b>Expected</b> before seeing<br>err <span id="ePred">–</span></figcaption></figure>
+        <figure><img id="recon" class="px" alt=""><figcaption><b>Perceived</b> after seeing<br>err <span id="eRecon">–</span></figcaption></figure>
+        <figure><img id="frozen" class="px" alt=""><figcaption><b>Frozen original</b> expected<br>err <span id="eFroz">–</span></figcaption></figure>
+        <figure><img id="surprise" class="px" alt=""><figcaption><b>Surprise</b> |expected − stimulus|<br>KL <span id="kl">–</span></figcaption></figure>
+      </div>
+    </section>
+    <section>
+      <h2>Time travel</h2>
+      <div class="row"><button id="snap">Snapshot now</button><button id="save">Save world</button><button id="reset">Reset to birth</button></div>
+      <div id="snaps" style="margin-top:6px"></div>
+      <h2 style="margin-top:12px">Replay a disturbance</h2>
+      <div class="row"><button id="rec">Record</button><button id="replay" disabled>Replay</button><span class="chip" id="cScript">no script</span></div>
+      <p class="note">Record your touches, restore a snapshot, then replay the same disturbance. The previous replay is drawn dashed so you can compare responses.</p>
+    </section>
+  </div>
+
+  <div class="col">
+    <section>
+      <h2 id="errTitle">Prediction error — live vs frozen</h2>
+      <canvas id="chErr" class="ch tall"></canvas>
+      <p class="note">Orange = live model, blue = frozen original (same noise, same input), dashed = previous replay. Watching: error of the expected frame vs what it then perceived. Dream: dissonance between expected and perceived. A live curve only matters if it beats the frozen one under the same touch.</p>
+    </section>
+    <section>
+      <h2>What changed (weights vs birth)</h2>
+      <canvas id="chDrift" class="ch tall"></canvas>
+      <div class="kv" id="plast"></div>
+    </section>
+    <section>
+      <h2>Latent state</h2>
+      <canvas id="chLat" class="ch"></canvas>
+      <p class="note">Bars = posterior mean of each stochastic unit, band = its uncertainty.</p>
+    </section>
+    <section>
+      <h2>Encoder activations (live)</h2>
+      <div class="acts"><img id="a0" alt=""><img id="a1" alt=""><img id="a2" alt=""></div>
+      <canvas id="chAct" class="ch" style="margin-top:8px"></canvas>
+      <p class="note">Bottom: how differently each channel responds vs the frozen encoder, relative to its own scale (layers 1, 2, 3).</p>
+    </section>
+  </div>
+</main>
+<section id="labSec" style="margin:0 18px 18px">
+  <h2>Lab — mechanistic interpretability of the selected model</h2>
+  <div class="row">
+    <span class="chip" id="labChip">…</span>
+    <button id="labQuick" title="Fewer worlds/ticks: about a minute or two on CPU">Run lab (quick)</button>
+    <button id="labFull" title="Full protocol: several minutes on CPU">Run lab (full)</button>
+    <span class="chip" id="labJob"></span>
+  </div>
+  <div class="row" id="labLive" style="margin-top:8px">
+    <label>Live edit of this model's state:</label>
+    <select id="labSteerT"></select><label>steer by</label><input id="labAlpha" type="range" min="-3" max="3" step="0.25" value="1.5"><span class="chip" id="labAlphaV">+1.50 sd</span><button id="labSteerGo">Steer</button>
+    <select id="labGroup"></select><select id="labVal"><option value="mean">to its mean</option><option value="zero">to zero</option></select><button id="labLesionGo">Lesion</button>
+    <button id="labClear">Clear edit</button><span class="chip" id="labActive">no edit</span>
+  </div>
+  <p class="note">Steer adds (slider × the spread of the states along the probe direction) to the state the decoder renders, every tick. Lesion forces a set of units to its mean (or zero). Only the live model is edited: the <b>Frozen original</b> panel above runs the same noise and is the control. Needs a lab run for this model (probe directions, reference means, lesion groups). Results below come from the model's own dreams (noise start, 10-ish worlds), labels are the touch we drive it with and the eye segmenter's measurements of its render: look at the controls (random-init network, shuffled labels, random directions, random unit sets) before believing a number.</p>
+  <div id="labBody"></div>
+</section>
+<div style="padding:0 18px 18px"><div id="err"></div></div>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const S={tool:"scatter",gaze:[0,0],gazeOn:false,gazeOk:false,target:[0,0,0,0,0],light:false,learn:false,dream:false,intervene:true,paused:false,fps:12,trust:.5,sq:[],prev:null,
+  eLive:[],eFroz:[],ghost:null,rec:false,script:[],replay:null,recStart:null,last:null,lim:[.2,.2,.5,.8,.8],ptr:null};
+const MAXN=300;
+async function post(path,body){const r=await fetch(path,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body||{})});
+  const j=await r.json();if(!r.ok||j.error)throw new Error(j.error||r.statusText);return j}
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function fit(c){const d=window.devicePixelRatio||1,w=c.clientWidth,h=c.clientHeight;
+  if(c.width!==Math.round(w*d)||c.height!==Math.round(h*d)){c.width=Math.round(w*d);c.height=Math.round(h*d)}
+  const g=c.getContext("2d");g.setTransform(d,0,0,d,0,0);g.clearRect(0,0,w,h);return{g,w,h}}
+function lines(c,series){const{g,w,h}=fit(c);let mx=1e-6,n=2;
+  for(const s of series){if(!s.d)continue;n=Math.max(n,s.d.length);for(const v of s.d)if(v>mx)mx=v}
+  g.strokeStyle=css("--line");g.lineWidth=1;g.strokeRect(.5,.5,w-1,h-1);
+  for(const s of series){if(!s.d||s.d.length<2)continue;g.beginPath();g.strokeStyle=s.c;g.lineWidth=s.w||1.6;g.setLineDash(s.dash||[]);
+    s.d.forEach((v,i)=>{const x=i/(n-1)*(w-6)+3,y=h-4-(v/mx)*(h-12);i?g.lineTo(x,y):g.moveTo(x,y)});g.stroke()}
+  g.setLineDash([]);g.fillStyle=css("--mute");g.font="11px system-ui";g.fillText("max "+mx.toFixed(4),6,12)}
+function bars(c,groups,color,fmt){const{g,w,h}=fit(c);const all=groups.flatMap(x=>x.v);const mx=Math.max(1e-9,...all);
+  const gap=6,total=all.length;const bw=(w-gap*(groups.length+1))/total;let x=gap;g.font="10px system-ui";
+  for(const grp of groups){grp.v.forEach((v,i)=>{const bh=v/mx*(h-26);g.fillStyle=grp.c||color;g.fillRect(x,h-14-bh,Math.max(1,bw-1),bh);
+      if(grp.labels&&grp.v.length<12){g.fillStyle=css("--mute");g.save();g.translate(x+bw/2,h-2);g.fillText(grp.labels[i],-bw/2,0);g.restore()}x+=bw});x+=gap}
+  g.fillStyle=css("--mute");g.fillText("max "+(fmt?fmt(mx):mx.toFixed(3)),4,10)}
+function latent(c,mean,std){const{g,w,h}=fit(c);const n=mean.length,bw=w/n,mid=h/2;
+  const mx=Math.max(1,...mean.map((m,i)=>Math.abs(m)+std[i]));g.strokeStyle=css("--line");g.beginPath();g.moveTo(0,mid);g.lineTo(w,mid);g.stroke();
+  mean.forEach((m,i)=>{const x=i*bw,sh=std[i]/mx*mid,my=m/mx*mid;g.fillStyle=css("--bar");g.globalAlpha=.25;g.fillRect(x+1,mid-my-sh,bw-2,sh*2);
+    g.globalAlpha=1;g.fillRect(x+1,my>=0?mid-my:mid,bw-2,Math.max(1,Math.abs(my)))})}
+
+/* ---------- touch ---------- */
+const stage=$("stage"),ov=$("ov");
+function setFromPointer(e){const r=stage.getBoundingClientRect();const px=(e.clientX-r.left)/r.width,py=(e.clientY-r.top)/r.height;
+  const L=S.lim,cl=(v,m)=>Math.max(-m,Math.min(m,v));
+  if(S.tool==="light"){S.light=true;S.target[3]=cl(px*2-1,L[3]);S.target[4]=cl(py*2-1,L[4])}
+  else if(S.tool==="eye"){S.target[0]=cl(px-.5,L[0]);S.target[1]=cl(py-.5,L[1])}
+  else if(S.tool==="gaze"){S.gaze=[Math.max(-1,Math.min(1,px*2-1)),Math.max(-1,Math.min(1,py*2-1))];setGaze(true)}
+  else if(S.prev){const d=Math.hypot(px-S.prev[0],py-S.prev[1]),k=Math.min(1,d*12);   // shake speed -> scatter strength
+    if(k>.02)S.sq.push([px,py,k])}
+  S.prev=[px,py];S.ptr=[px,py]}
+stage.addEventListener("pointerdown",e=>{if(S.replay)return;stage.setPointerCapture(e.pointerId);S.drag=true;S.prev=null;setFromPointer(e)});
+stage.addEventListener("pointermove",e=>{if(S.drag&&!S.replay)setFromPointer(e);else if(!S.drag){const r=stage.getBoundingClientRect();S.ptr=[(e.clientX-r.left)/r.width,(e.clientY-r.top)/r.height];if(S.last)draw()}});
+stage.addEventListener("pointerup",()=>{S.drag=false;S.ptr=null;S.prev=null});
+stage.addEventListener("pointerleave",()=>{if(!S.drag){S.ptr=null;if(S.last)draw()}});
+stage.addEventListener("wheel",e=>{e.preventDefault();$("exp").value=Math.max(-.5,Math.min(.5,+$("exp").value-e.deltaY*.0005));syncExp()},{passive:false});
+function syncExp(){S.target[2]=+$("exp").value;$("expv").textContent="×"+Math.exp(S.target[2]).toFixed(2)}
+$("exp").oninput=syncExp;
+$("trust").oninput=e=>S.trust=+e.target.value;
+$("fps").oninput=e=>S.fps=+e.target.value;
+function tool(t){S.tool=t;for(const [id,n] of [["toolScatter","scatter"],["toolLight","light"],["toolEye","eye"],["toolGaze","gaze"]])$(id).classList.toggle("act",t===n)}
+function setGaze(on){S.gazeOn=on;$("gazeBtn").textContent="Gaze command: "+(on?"on":"off");$("gazeBtn").classList.toggle("act",on)}
+$("toolGaze").onclick=()=>tool("gaze");$("gazeBtn").onclick=()=>setGaze(!S.gazeOn);
+$("toolScatter").onclick=()=>tool("scatter");$("toolLight").onclick=()=>tool("light");$("toolEye").onclick=()=>tool("eye");
+function setT(o){Object.entries(o).forEach(([k,v])=>S.target[k]=v);$("exp").value=S.target[2];syncExp()}
+function srcText(i){return "source: "+i.source+(i.birth?" "+(i.birth.index+1)+"/"+i.birth.count:"")+" (noise seed "+i.seed+")"}
+$("pDim").onclick=()=>setT({2:-.5});$("pSpot").onclick=()=>{S.light=true;setT({3:-.8,4:0})};$("pEye").onclick=()=>setT({0:-.2,1:0});
+$("pCenter").onclick=()=>{S.light=false;setT({0:0,1:0,2:0,3:0,4:0})};
+$("reseed").onclick=async()=>{try{await post("/api/reseed",{});S.light=false;setT({0:0,1:0,2:0,3:0,4:0});S.eLive=[];S.eFroz=[];S.sq=[];
+  const i=await (await fetch("/api/info")).json();$("cSrc").textContent=srcText(i)}catch(e){showErr(e)}};
+let wanderInterval = null;
+$("wander").onclick=()=>{
+  S.wander = !S.wander;
+  $("wander").textContent = "Wander latent space: " + (S.wander ? "on" : "off");
+  $("wander").classList.toggle("act", S.wander);
+  if(S.wander) {
+    S.dream = true; // dream: the touch reaches the model only as actions, so it can wander without being snapped back by the touched canvas
+    $("dream").textContent = "Dream: on";
+    $("dream").classList.add("act");
+    wanderInterval = setInterval(() => {
+      if(!S.paused) {
+        let newTarget = {};
+        S.target.forEach((v, i) => {
+          newTarget[i] = Math.max(-S.lim[i], Math.min(S.lim[i], v + (Math.random() - 0.5) * 0.2));
+        });
+        setT(newTarget);
+      }
+    }, 200);
+  } else {
+    clearInterval(wanderInterval);
+  }
+};
+function toggle(id,key,label,chip){$(id).onclick=()=>{S[key]=!S[key];$(id).textContent=label+": "+(S[key]?"on":"off");$(id).classList.toggle("act",S[key]);refreshChips()}}
+toggle("learn","learn","Learning");toggle("dream","dream","Dream");
+$("intervene").onclick=()=>{S.intervene=!S.intervene;$("intervene").textContent="Intervene: "+(S.intervene?"on":"off");
+  $("intervene").classList.toggle("act",S.intervene);S.sq=[];S.prev=null;
+  if(S.intervene&&S.last){S.target=S.last.state.slice();S.light=!!S.last.light;$("exp").value=S.target[2];syncExp()}   // resume from where the world's touch state is
+  refreshChips()};
+$("pause").onclick=()=>{S.paused=!S.paused;$("pause").textContent=S.paused?"Resume":"Pause";$("pause").classList.toggle("act",S.paused)};
+function refreshChips(){const l=$("cLearn");l.textContent=S.learn?"learning on":"learning off";l.classList.toggle("on",S.learn);
+  $("cMode").textContent=(S.replay?"replaying":S.rec?"recording":S.dream?"dreaming (sees only its own render)":"watching")+(S.intervene?"":" · no intervention")}
+
+/* ---------- time travel / replay ---------- */
+async function snaps(list){const l=list||await (await fetch("/api/snapshots")).json();$("snaps").innerHTML="";
+  l.forEach(s=>{const d=document.createElement("div");d.className="snap";d.innerHTML=`<span>${s.name} · tick ${s.tick} · ${s.learn_steps} updates</span>`;
+    const b=document.createElement("button");b.textContent="Restore";b.onclick=async()=>{try{await post("/api/restore",{id:s.id});S.eLive=[];S.eFroz=[]}catch(e){showErr(e)}};d.appendChild(b);$("snaps").appendChild(d)})}
+$("snap").onclick=()=>post("/api/snapshot",{}).then(snaps).catch(showErr);
+$("save").onclick=()=>post("/api/save",{}).then(r=>$("err").textContent="Saved to "+r.path).catch(showErr);
+$("reset").onclick=async()=>{if(!confirm("Reset the live model to its birth weights and clear snapshots?"))return;
+  try{await post("/api/reset",{});S.eLive=[];S.eFroz=[];S.ghost=null;snaps([])}catch(e){showErr(e)}};
+$("rec").onclick=()=>{if(S.rec){S.rec=false;$("rec").textContent="Record";$("rec").classList.remove("rec");
+    $("cScript").textContent=S.script.length+" ticks";$("replay").disabled=!S.script.length}
+  else{S.script=[];S.recStart=S.last?{state:S.last.state,light:!!S.last.light}:null;S.rec=true;$("rec").textContent="Stop";$("rec").classList.add("rec");$("replay").disabled=true}refreshChips()};
+$("replay").onclick=async()=>{if(!S.script.length)return;try{if(S.recStart)await post("/api/set_state",{state:S.recStart.state,light:S.recStart.light});
+    S.eLive=[];S.eFroz=[];S.replay={i:0};refreshChips()}catch(e){showErr(e)}};
+function showErr(e){$("err").textContent=String(e.message||e)}
+
+/* ---------- render ---------- */
+function render(r,fresh=true){S.last=r;$("cTick").textContent="tick "+r.tick;
+  for(const [k,id] of [["stim","stim"],["pred","pred"],["recon","recon"],["frozen","frozen"],["surprise","surprise"]])$(id).src=r.img[k];
+  $("ePred").textContent=r.mse.pred.toFixed(4);$("eRecon").textContent=r.mse.recon.toFixed(4);
+  $("eFroz").textContent=r.mse.pred_frozen.toFixed(4);$("kl").textContent=r.kl.toFixed(2);
+  $("errTitle").textContent=(r.metric==="dissonance"?"Dissonance":"Prediction error")+" — live vs frozen";
+  if(fresh){S.eLive.push(r.mse.pred);S.eFroz.push(r.mse.pred_frozen);if(!S.replay&&S.eLive.length>MAXN){S.eLive.shift();S.eFroz.shift()}}
+  lines($("chErr"),[{d:S.ghost,c:css("--live"),dash:[4,3],w:1},{d:S.eFroz,c:css("--froz")},{d:S.eLive,c:css("--live")}]);
+  const dm=r.drift.modules;const layers=r.drift.layers;
+  bars($("chDrift"),[{v:Object.values(dm),labels:Object.keys(dm),c:css("--accent")},{v:layers.map(l=>l.rel),c:css("--bar")}],css("--bar"),v=>(v*100).toFixed(2)+"%");
+  const p=r.plasticity;const sc=Object.entries(p.scales).map(([k,v])=>k+" "+v.toFixed(2)).join(" · ");
+  $("plast").innerHTML=`<span>updates</span><span>${p.learn_steps} (replay ${p.replay})</span><span>plasticity</span><span>${sc}</span>`+
+    `<span>retention</span><span style="color:${p.retention_ok?css("--ok"):css("--bad")}">${p.retention_ok?"ok":"FAILING"} · distance to frozen ${p.probe.toFixed(4)} (limit ${p.tol.toFixed(4)})</span>`+
+    `<span>last loss</span><span>${p.loss==null?"–":p.loss.toFixed(1)}</span>`;
+  latent($("chLat"),r.latent.mean,r.latent.std);
+  ["a0","a1","a2"].forEach((id,i)=>$(id).src=r.acts[i]);
+  bars($("chAct"),r.act_diff.map((v,i)=>({v,c:[css("--accent"),css("--bar"),css("--live")][i]})),css("--bar"),v=>v.toFixed(2));
+  draw()}
+function draw(){const{g,w,h}=fit(ov);const L=S.last?S.last.state:S.target;g.strokeStyle="rgba(255,214,10,.95)";g.lineWidth=2;
+  const x=(L[3]+1)/2*w,y=(L[4]+1)/2*h;
+  if(S.last?S.last.light:S.light){g.beginPath();g.arc(x,y,9,0,7);g.stroke();g.beginPath();g.moveTo(x-14,y);g.lineTo(x+14,y);g.moveTo(x,y-14);g.lineTo(x,y+14);g.stroke()}   // the light marker only exists while the light is on
+  g.strokeStyle="rgba(120,200,255,.8)";g.setLineDash([4,4]);g.strokeRect(w*(.5+L[0]-.18),h*(.5+L[1]-.18),w*.36,h*.36);g.setLineDash([]);
+  if(S.gazeOk&&S.last&&S.last.gaze){const gz=S.last.gaze;
+    if(gz.command){const gx=gz.command[0]+2*L[0],gy=gz.command[1]+2*L[1],x2=(gx+1)/2*w,y2=(gy+1)/2*h;   // command is in the untouched eye; the touch shifts the picture by 2*shift
+      g.strokeStyle="rgba(81,207,102,.95)";g.lineWidth=2;g.beginPath();g.moveTo(x2-12,y2);g.lineTo(x2+12,y2);g.moveTo(x2,y2-12);g.lineTo(x2,y2+12);g.stroke()}
+    if(gz.pupil){const px2=(gz.pupil[0]+1)/2*w,py2=(gz.pupil[1]+1)/2*h,r2=Math.max(3,gz.pupil[2]/2*w);
+      g.strokeStyle="rgba(34,211,238,.95)";g.lineWidth=1.5;g.beginPath();g.arc(px2,py2,r2,0,7);g.stroke()}}
+  if(S.tool==="scatter"&&S.ptr){g.strokeStyle="rgba(255,255,255,.7)";g.lineWidth=1.5;g.beginPath();g.arc(S.ptr[0]*w,S.ptr[1]*h,.18*w,0,7);g.stroke()}}
+
+/* ---------- loop ---------- */
+async function loop(){let last=performance.now(),ema=0;
+  for(;;){
+    if(S.paused){await new Promise(r=>setTimeout(r,100));continue}
+    const t0=performance.now();let target=S.target.slice(),scatter=S.sq.splice(0).slice(-64),intervene=S.intervene,light=S.light;
+    if(S.replay){if(S.replay.i>=S.script.length){S.ghost=S.eLive.slice();S.replay=null;refreshChips()}else{const e=S.script[S.replay.i++];target=e.target;scatter=e.scatter;intervene=e.intervene;light=!!e.light}}
+    let gaze=S.gazeOn?S.gaze.slice():null;
+    if(S.replay&&S.replay.i>0)gaze=S.script[S.replay.i-1].gaze||null;
+    if(S.rec)S.script.push({target:target.slice(),scatter,intervene,gaze,light});
+    try{const r=await post("/api/tick",{target,scatter,intervene,light,gaze,learn:S.learn,dream:S.dream,trust:S.trust});$("err").textContent="";render(r)}
+    catch(e){showErr(e);await new Promise(r=>setTimeout(r,800))}
+    const dt=performance.now()-t0;ema=ema*.8+dt*.2;$("cFps").textContent=(1000/Math.max(1,ema)).toFixed(0)+" ticks/s";
+    await new Promise(r=>setTimeout(r,Math.max(0,1000/S.fps-dt)))}}
+async function applyInfo(i){S.lim=i.limits;
+  S.gazeOk=!!i.gaze_command;for(const id of ["toolGaze","gazeBtn","gazeNote"])$(id).style.display=S.gazeOk?"":"none";
+  if(S.gazeOk){$("gazeNote").innerHTML="<b>Gaze command</b> (this model was trained with one): pick <b>Aim gaze</b> and click/drag to set where the pupil should go (green cross = commanded target). Off = the model dreams its own gaze. "+(i.geometry?"Cyan circle = where the model's own geometry head says the pupil is.":"")}
+  else{S.gazeOn=false;setGaze(false);if(S.tool==="gaze")tool("scatter")}
+  $("cSrc").textContent=srcText(i);$("reseed").textContent=i.birth?"New remembered eye":"New noise eye";
+  const t=$("cTrain");t.textContent=i.trained?"trained checkpoint":"UNTRAINED model";t.classList.toggle("warn",!i.trained);
+  if(i.resumed)$("err").textContent="Resumed saved world.";await snaps()}
+const TIER_NAME={eye:"Makes an eye (eye in most worlds)",some:"Sometimes makes an eye",no:"No eye (blobs)",null:"Not checked yet"};
+const FILTERS={eyes:["eye"],some:["eye","some"],all:["eye","some","no",null]};
+async function loadModels(){const r=await (await fetch("/api/models")).json();const sel=$("modelSel"),keep=FILTERS[$("modelFilter").value];sel.innerHTML="";
+  const shown=r.models.filter(m=>m.current||keep.includes(m.tier));
+  for(const t of ["eye","some","no",null]){const ms=shown.filter(m=>m.tier===t);if(!ms.length)continue;const og=document.createElement("optgroup");og.label=TIER_NAME[t]+" · "+ms.length;sel.appendChild(og);
+    ms.forEach(m=>{const o=document.createElement("option");o.value=m.id;o.selected=m.current;
+      o.textContent=m.label+"  ("+m.group.replace(/_\d+steps$|_\d+k$/,"")+") · "+m.size+"px "+(m.channels===3?"rgb":"gray")+" · "+(m.params/1e6).toFixed(1)+"M"+(m.gaze?" · gaze":"");og.appendChild(o)})}
+  if(!r.current){const o=document.createElement("option");o.textContent="(model outside pilot_results)";o.selected=true;o.disabled=true;sel.prepend(o)}
+  $("modelCount").textContent=shown.length+" of "+r.models.length+" models"}
+$("modelFilter").onchange=()=>loadModels().catch(showErr);
+$("modelSel").onchange=async e=>{const sel=e.target;sel.disabled=true;$("err").textContent="Loading model…";
+  try{const r=await post("/api/load_model",{id:sel.value});S.eLive=[];S.eFroz=[];S.ghost=null;S.sq=[];S.replay=null;S.prev=null;S.script=[];S.rec=false;$("rec").textContent="Record";$("rec").classList.remove("rec");$("replay").disabled=true;$("cScript").textContent="no script";
+    S.target=[0,0,0,0,0];S.light=false;syncExp();await applyInfo(r.info);refreshChips();await labLoad();$("err").textContent=r.changed?"Switched model (fresh world).":""}
+  catch(err){showErr(err);await loadModels()}finally{sel.disabled=false}};
+/* ---------- lab ---------- */
+const LAB={d:null,timer:null};
+const fx=(v,d=2)=>v==null?"–":(+v).toFixed(d);
+const LT=["shift_x","shift_y","gain","light_x","light_y","pupil_x","pupil_y","pupil_r","iris_r","brightness","eye"];
+const LM=["pupil_x","pupil_y","pupil_r","iris_r","brightness","eye"];
+const TNAME={shift_x:"touch: shift x",shift_y:"touch: shift y",gain:"touch: exposure",light_x:"touch: light x",light_y:"touch: light y",pupil_x:"pupil x",pupil_y:"pupil y",pupil_r:"pupil radius",iris_r:"iris radius",brightness:"brightness",eye:"is an eye"};
+const card=(t,h)=>"<div><h3>"+t+"</h3>"+h+"</div>";
+const kvs=rows=>"<div class=kv>"+rows.map(r=>"<span>"+r[0]+"</span><span>"+r[1]+"</span>").join("")+"</div>";
+async function labLoad(){try{LAB.d=await (await fetch("/api/lab")).json();labRender()}catch(e){showErr(e)}}
+function labJobText(j){if(!j)return"";if(j.state==="running")return"running: "+j.stage+" "+Math.round((j.frac||0)*100)+"%";if(j.state==="error")return"error: "+j.error;return"finished"}
+function labRender(){
+  const d=LAB.d,body=$("labBody");
+  if(!d.available){$("labChip").textContent=d.reason;body.innerHTML="";return}
+  const r=d.results;
+  $("labChip").textContent=d.label+" · tier "+(d.tier||"unchecked")+(r?" · lab run: "+r.lab.probe_worlds+" worlds × "+r.lab.probe_ticks+" ticks, "+r.seconds+" s":" · no lab run yet");
+  $("labJob").textContent=labJobText(d.job);
+  const run=d.job&&d.job.state==="running";$("labQuick").disabled=$("labFull").disabled=run;
+  const iv=d.intervention;$("labActive").textContent=iv?[iv.steer?("steer "+iv.steer.target+" "+(+iv.steer.alpha>=0?"+":"")+fx(iv.steer.alpha)+" sd"):"",iv.lesion?("lesion "+(iv.lesion.group||((iv.lesion.space||"z")+" units "+iv.lesion.idx.join(","))))+" → "+(iv.lesion.value||"mean"):""].filter(Boolean).join(" + "):"no edit";
+  const sT=$("labSteerT"),sG=$("labGroup"),selT=sT.value,selG=sG.value;sT.innerHTML=sG.innerHTML="";
+  if(!r){body.innerHTML="<p class=note>No lab run for this model yet (checkpoint size "+"is part of the cache key). Press <b>Run lab</b>; the live world keeps running meanwhile.</p>";return}
+  for(const k of LT)if(r.probes[k]&&r.probes[k].dir){const o=document.createElement("option");o.value=k;o.textContent=TNAME[k];sT.appendChild(o)}
+  const gs=Object.keys(r.lesion.groups),rank=g=>/^(z_|h_)/.test(g)?0:/^top_/.test(g)?1:/^random/.test(g)?2:3;gs.sort((a,b)=>rank(a)-rank(b)||a.localeCompare(b,undefined,{numeric:true}));
+  for(const g of gs){const o=document.createElement("option");o.value=g;o.textContent=g+" ("+r.lesion.groups[g].units+" units)";sG.appendChild(o)}
+  if(selT)sT.value=selT;if(selG)sG.value=selG;
+  const c=r.capacity,P=r.probes;let h="";
+  h+=card("Capacity: how much of the latent space is used",kvs([["active z units (KL > 0.01 nats)",c.active_kl+" / "+c.z_dim],["active z units (posterior-mean variance > 0.01)",c.active_var+" / "+c.z_dim],["total KL per step (nats)",fx(c.kl_total,1)],
+    ["effective dimensions (participation ratio) h / z / h+z",fx(c.pr.h,1)+" / "+fx(c.pr.z,1)+" / "+fx(c.pr.hz,1)],["dimensions for 90% of the variance h / z / h+z",c.n90.h+" / "+c.n90.z+" / "+c.n90.hz],["silent h units (std < 0.01)",c.h_silent+" / "+c.h_dim]])+
+    "<canvas id=labKL class=ch></canvas><p class=note>KL of each stochastic unit (posterior vs prior), then the spread of each deterministic (GRU) unit.</p><canvas id=labHS class=ch></canvas>");
+  let t="<table class=lab><tr><th>variable</th><th>h</th><th>z</th><th>h+z</th><th>random-init net</th><th>shuffled</th><th>selectivity</th></tr>";
+  for(const k of LT){const p=P[k];if(!p)continue;const ctrl=Math.max(p.r2_random_init??0,p.r2_shuffle??0,0),sel=p.r2.hz==null?null:p.r2.hz-ctrl;
+    t+="<tr><td>"+TNAME[k]+"</td><td>"+fx(p.r2.h)+"</td><td>"+fx(p.r2.z)+"</td><td>"+fx(p.r2.hz)+"</td><td class=dim>"+fx(p.r2_random_init)+"</td><td class=dim>"+fx(p.r2_shuffle)+"</td><td class='"+(sel>0.3?"hl":"")+"'>"+fx(sel)+" <span class=sbar style='width:"+Math.round(Math.max(0,sel||0)*70)+"px'></span></td></tr>"}
+  t+="</table><p class=note>Held-out R² of a ridge probe (folds split by world). Selectivity = h+z minus the better of the two controls: the same probe on a random-init network that got the same actions, and on label series shifted in time. Strongest single units: "+
+    LT.filter(k=>P[k]&&P[k].top_units).map(k=>TNAME[k]+" "+P[k].top_units.slice(0,3).map(u=>u.space+u.index+" ("+(u.r>0?"+":"")+fx(u.r)+")").join(" ")).join("; ")+"</p>";
+  h+=card("Probes: what the state linearly encodes",t);
+  const S=r.steer,rb=S.random_abs_response_sd;
+  t="<table class=lab><tr><th>steer along →</th>"+LM.map(m=>"<th>"+TNAME[m]+"</th>").join("")+"<th>achieved / predicted</th></tr>";
+  for(const k of LT){const e=S.directions[k];if(!e)continue;
+    t+="<tr><td>"+TNAME[k]+"</td>"+LM.map(m=>{const v=e.response_sd[m];return "<td class='"+(v!=null&&Math.abs(v)>2*(rb[m]||0)&&Math.abs(v)>0.3?"hl":"dim")+"'>"+(v==null?"–":(v>0?"+":"")+fx(v))+"</td>"}).join("")+"<td>"+(e.effect!=null&&e.predicted?fx(e.effect/e.predicted):"")+"</td></tr>"}
+  t+="<tr><td class=dim>random direction (mean |response|)</td>"+LM.map(m=>"<td class=dim>"+fx(rb[m])+"</td>").join("")+"<td></td></tr></table><p class=note>Response of each measured variable to moving the decoded state "+S.alphas.join(" / ")+" spreads along a probe direction, in natural standard deviations of that variable per spread; bold = more than twice the random-direction response and above 0.3. Achieved / predicted = measured change over the change the probe itself predicts (1 = the direction acts exactly as decoded).</p>";
+  h+=card("Steering: does the encoded direction cause the change?",t);
+  const L=r.lesion.groups,ents=Object.entries(L),rnd=ents.filter(([k])=>k.startsWith("random")),rm=rnd.length?rnd.reduce((a,[,v])=>a+v.pix_early,0)/rnd.length:0;
+  const show=ents.filter(([k,v])=>/^(z_|h_|top_|random)/.test(k)).concat(ents.filter(([k])=>/^[hz]\d/.test(k)).sort((a,b)=>b[1].pix_early-a[1].pix_early).slice(0,6));
+  t="<table class=lab><tr><th>clamped to its mean</th><th>units</th><th>render change, first 3 ticks</th><th>render change, rest</th><th>Δ eye share</th></tr>";
+  for(const [k,v] of show)t+="<tr><td>"+k+"</td><td>"+v.units+"</td><td class='"+(v.pix_early>1.5*rm&&!k.startsWith("random")?"hl":"")+"'>"+fx(v.pix_early,4)+"</td><td>"+fx(v.pix,3)+"</td><td class='"+(v.d_eye<0?"neg":"")+"'>"+(v.d_eye>0?"+":"")+fx(v.d_eye)+"</td></tr>";
+  t+="</table><p class=note>Paired with the unlesioned dream (same noise), clamp from tick "+r.lesion.window[0]+". First-3-ticks change = direct effect on the render; the later change is dominated by chaotic divergence (compare with the random sets: mean first-3-tick change "+fx(rm,4)+"). Unlesioned eye share "+fx(r.lesion.eye_base)+".</p>";
+  h+=card("Lesions",t);
+  const D=r.dynamics,N=D.noisy,Q=D.deterministic,J=D.jacobian,Pt=D.perturbation,pa=r.patch;
+  h+=card("Dynamics",kvs([["GRU Jacobian spectral radius (mean / max)",fx(J.radius_mean,3)+" / "+fx(J.radius_max,3)],["perturbation growth λ per tick (>0 amplifies)",fx(Pt.lambda_per_tick,3)],["perturbation / world-to-world distance after "+(Object.keys(Pt.d_marks).pop())+" ticks",fx(Pt.saturation,3)],
+    ["world dispersion at the end vs start (<1 = worlds converge)",fx(N.world_dispersion[N.world_dispersion.length-1],2)],["noise-free loop: step norm at the end (0 = fixed point)",fx(Q.step_norm[Q.step_norm.length-1],2)],["noise-free loop: stationary after tick",Q.stationary_tick==null?"never":Q.stationary_tick],
+    ["eye share first / last 30 ticks (noisy)",fx(N.eye_first)+" / "+fx(N.eye_last)],["eye share first / last 30 ticks (noise-free)",fx(Q.eye_first)+" / "+fx(Q.eye_last)]])+
+    (pa&&pa.groups?"<h3 style='margin-top:10px'>Patching from an eye world into a blob world</h3>"+kvs([["recipient eye share before / donor",fx(pa.recipient_eye)+" / "+fx(pa.donor_eye)]].concat(Object.entries(pa.groups).map(([k,v])=>["after copying "+k+" ("+v.units+" units)",fx(v.eye)]))):"<p class=note>Patching: "+((pa&&pa.skipped)||"not run")+"</p>"));
+  const im=(n,l)=>r.images.includes(n)?"<img src='/api/lab/img?t="+r.seconds+"&f="+n+"'><p class=note>"+l+"</p>":"";
+  h+=card("What the directions draw",im("filmstrip","Decoder output along each probe direction: −3 … +3 spreads around one dream state (rows = variable).")+im("dream","The dream the lab analysed: 4 worlds, tick 20 and the last tick."));
+  h+=card("What the encoder channels like",im("encoder_am","Activation maximisation of the most variable channels of encoder layers 1, 2, 3 (rows)."));
+  body.innerHTML=h;
+  bars($("labKL"),[{v:c.kl_unit,c:css("--bar")}]);bars($("labHS"),[{v:c.h_std,c:css("--accent")}]);
+}
+function labPoll(){clearInterval(LAB.timer);LAB.timer=setInterval(async()=>{try{const d=await (await fetch("/api/lab")).json();LAB.d=d;
+  if(d.job&&d.job.state==="running")$("labJob").textContent=labJobText(d.job);else{clearInterval(LAB.timer);labRender()}}catch(e){clearInterval(LAB.timer);showErr(e)}},1500)}
+async function labRun(quick){try{await post("/api/lab/run",{quick});await labLoad();labPoll()}catch(e){showErr(e)}}
+$("labQuick").onclick=()=>labRun(true);$("labFull").onclick=()=>labRun(false);
+$("labAlpha").oninput=e=>$("labAlphaV").textContent=(+e.target.value>=0?"+":"")+(+e.target.value).toFixed(2)+" sd";
+const labSet=async req=>{try{await post("/api/lab/set",req);await labLoad()}catch(e){showErr(e)}};
+$("labSteerGo").onclick=()=>labSet({steer:{target:$("labSteerT").value,alpha:+$("labAlpha").value}});
+$("labLesionGo").onclick=()=>labSet({lesion:{group:$("labGroup").value,value:$("labVal").value}});
+$("labClear").onclick=()=>labSet({clear:true});
+(async()=>{try{await applyInfo(await (await fetch("/api/info")).json());await loadModels();await labLoad()}catch(e){showErr(e)}
+  syncExp();refreshChips();loop()})();
+window.addEventListener("resize",()=>{if(S.last)render(S.last,false)});
+</script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+{
+ "summary": {
+  "saved_birth_fresh_noise": {
+   "eye_frac": 0.923,
+   "eye_moving": 0.821,
+   "still_frac": 0.099,
+   "first100": 0.963,
+   "max_len": 441.0,
+   "n_long": 2.5
+  },
+  "all_candidates_fresh_noise": {
+   "eye_frac": 0.929,
+   "eye_moving": 0.779,
+   "still_frac": 0.174,
+   "first100": 0.919,
+   "max_len": 462.643,
+   "n_long": 1.952
+  },
+  "noise_start_fresh_noise": {
+   "eye_frac": 0.948,
+   "eye_moving": 0.836,
+   "still_frac": 0.112,
+   "first100": 0.985,
+   "max_len": 462.375,
+   "n_long": 2.0
+  },
+  "selection": {
+   "dwell_ticks": 300,
+   "check_ticks": 600,
+   "candidates": 42,
+   "k": 8,
+   "context": 16
+  }
+ },
+ "meta": {
+  "group": [
+   "S_190",
+   "16 (1)",
+   "yt_NjO1lizqZ3o",
+   "S_4",
+   "S_151",
+   "S_168",
+   "S_76",
+   "S_67"
+  ],
+  "source": [
+   "openeds",
+   "video",
+   "video",
+   "openeds",
+   "openeds",
+   "openeds",
+   "openeds",
+   "openeds"
+  ],
+  "seq": [
+   25,
+   2,
+   51,
+   31,
+   18,
+   21,
+   33,
+   32
+  ],
+  "offset": [
+   20,
+   117,
+   17,
+   32,
+   87,
+   25,
+   127,
+   9
+  ],
+  "context": 16,
+  "recon_mse": [
+   0.00155,
+   0.00113,
+   0.00817,
+   0.00206,
+   0.00105,
+   0.0008,
+   0.00319,
+   0.00149
+  ],
+  "selection_eye_moving": [
+   0.997,
+   0.98,
+   0.97,
+   0.963,
+   0.947,
+   0.94,
+   0.93,
+   0.923
+  ],
+  "seed": 0,
+  "note": "held-out windows perceived once; only the latent state is stored"
+ }
+}
